@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Change `WriteBuffer + 'static` to `StaticWriteBuffer`in the DMA module.
 - Fixed a race condition where SPI writes could get stuck in an error state forever (PR #269).
 - Implement generics on the serial module.
+- DMA: Memory to peripheral transfers now only require `StaticReadBuffer` [#257].
+
+[#257]: https://github.com/stm32-rs/stm32f4xx-hal/pull/257
 
 ### Added
 

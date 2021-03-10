@@ -1,64 +1,62 @@
-use crate::{
-    timer::{PinC1},
-};
+use crate::timer::PinC1;
 
 #[cfg(any(
-feature = "stm32f401",
-feature = "stm32f405",
-feature = "stm32f407",
-feature = "stm32f410",
-feature = "stm32f411",
-feature = "stm32f412",
-feature = "stm32f413",
-feature = "stm32f415",
-feature = "stm32f417",
-feature = "stm32f423",
-feature = "stm32f427",
-feature = "stm32f429",
-feature = "stm32f437",
-feature = "stm32f439",
-feature = "stm32f446",
-feature = "stm32f469",
-feature = "stm32f479"
+    feature = "stm32f401",
+    feature = "stm32f405",
+    feature = "stm32f407",
+    feature = "stm32f410",
+    feature = "stm32f411",
+    feature = "stm32f412",
+    feature = "stm32f413",
+    feature = "stm32f415",
+    feature = "stm32f417",
+    feature = "stm32f423",
+    feature = "stm32f427",
+    feature = "stm32f429",
+    feature = "stm32f437",
+    feature = "stm32f439",
+    feature = "stm32f446",
+    feature = "stm32f469",
+    feature = "stm32f479"
 ))]
 use crate::stm32::{TIM1, TIM11, TIM5, TIM9};
 use crate::{bb, hal, rcc::Clocks, stm32::RCC, time::Hertz};
 
 #[cfg(any(
-feature = "stm32f401",
-feature = "stm32f405",
-feature = "stm32f407",
-feature = "stm32f411",
-feature = "stm32f412",
-feature = "stm32f413",
-feature = "stm32f415",
-feature = "stm32f417",
-feature = "stm32f423",
-feature = "stm32f427",
-feature = "stm32f429",
-feature = "stm32f437",
-feature = "stm32f439",
-feature = "stm32f446",
-feature = "stm32f469",
-feature = "stm32f479"
+    feature = "stm32f401",
+    feature = "stm32f405",
+    feature = "stm32f407",
+    feature = "stm32f411",
+    feature = "stm32f412",
+    feature = "stm32f413",
+    feature = "stm32f415",
+    feature = "stm32f417",
+    feature = "stm32f423",
+    feature = "stm32f427",
+    feature = "stm32f429",
+    feature = "stm32f437",
+    feature = "stm32f439",
+    feature = "stm32f446",
+    feature = "stm32f469",
+    feature = "stm32f479"
 ))]
 use crate::stm32::{TIM10, TIM2, TIM3, TIM4};
 
 #[cfg(any(
-feature = "stm32f405",
-feature = "stm32f407",
-feature = "stm32f412",
-feature = "stm32f413",
-feature = "stm32f415",
-feature = "stm32f417",
-feature = "stm32f423",
-feature = "stm32f427",
-feature = "stm32f429",
-feature = "stm32f437",
-feature = "stm32f439",
-feature = "stm32f446",
-feature = "stm32f469",
-feature = "stm32f479"
+    feature = "stm32f405",
+    feature = "stm32f407",
+    feature = "stm32f412",
+    feature = "stm32f413",
+    feature = "stm32f415",
+    feature = "stm32f417",
+    feature = "stm32f423",
+    feature = "stm32f427",
+    feature = "stm32f429",
+    feature = "stm32f437",
+    feature = "stm32f439",
+    feature = "stm32f446",
+    feature = "stm32f469",
+    feature = "stm32f479"
 ))]
 use crate::stm32::{TIM12, TIM13, TIM14, TIM8};
 
@@ -69,12 +67,8 @@ pub struct PwmInput<TIM, PINS> {
 
 pub trait Pins<TIM> {}
 
-
 // implement the `Pins` trait wherever PC1 implements PinC1 and PC2 implements PinC2 for the given TIMer
-impl<TIM, PC1> Pins<TIM> for PC1
-    where
-        PC1: PinC1<TIM>,
-{}
+impl<TIM, PC1> Pins<TIM> for PC1 where PC1: PinC1<TIM> {}
 
 macro_rules! hal {
     ($($TIM:ident: ($tim:ident, $en_bit:expr, $reset_bit:expr, $apbenr:ident, $apbrstr:ident, $bits:ident),)+) => {
@@ -167,46 +161,44 @@ macro_rules! hal {
             } )+
 }}
 
-
 #[cfg(any(
-feature = "stm32f405",
-feature = "stm32f407",
-feature = "stm32f412",
-feature = "stm32f413",
-feature = "stm32f415",
-feature = "stm32f417",
-feature = "stm32f423",
-feature = "stm32f427",
-feature = "stm32f429",
-feature = "stm32f437",
-feature = "stm32f439",
-feature = "stm32f446",
-feature = "stm32f469",
-feature = "stm32f479"
+    feature = "stm32f405",
+    feature = "stm32f407",
+    feature = "stm32f412",
+    feature = "stm32f413",
+    feature = "stm32f415",
+    feature = "stm32f417",
+    feature = "stm32f423",
+    feature = "stm32f427",
+    feature = "stm32f429",
+    feature = "stm32f437",
+    feature = "stm32f439",
+    feature = "stm32f446",
+    feature = "stm32f469",
+    feature = "stm32f479"
 ))]
 hal! {
     TIM8: (tim8, 1, 1, apb2enr, apb2rstr, u16),
 }
 
-
 #[cfg(any(
-feature = "stm32f401",
-feature = "stm32f405",
-feature = "stm32f407",
-feature = "stm32f410",
-feature = "stm32f411",
-feature = "stm32f412",
-feature = "stm32f413",
-feature = "stm32f415",
-feature = "stm32f417",
-feature = "stm32f423",
-feature = "stm32f427",
-feature = "stm32f429",
-feature = "stm32f437",
-feature = "stm32f439",
-feature = "stm32f446",
-feature = "stm32f469",
-feature = "stm32f479"
+    feature = "stm32f401",
+    feature = "stm32f405",
+    feature = "stm32f407",
+    feature = "stm32f410",
+    feature = "stm32f411",
+    feature = "stm32f412",
+    feature = "stm32f413",
+    feature = "stm32f415",
+    feature = "stm32f417",
+    feature = "stm32f423",
+    feature = "stm32f427",
+    feature = "stm32f429",
+    feature = "stm32f437",
+    feature = "stm32f439",
+    feature = "stm32f446",
+    feature = "stm32f469",
+    feature = "stm32f479"
 ))]
 hal! {
     TIM1: (tim1, 0, 0, apb2enr, apb2rstr, u16),

@@ -7,7 +7,7 @@ use panic_halt as _;
 
 use cortex_m;
 use cortex_m_rt::entry;
-use stm32f4xx_hal::{prelude::*, pwm, stm32, timer, pwm_input};
+use stm32f4xx_hal::{prelude::*, pwm, pwm_input, stm32, timer};
 
 #[entry]
 fn main() -> ! {
@@ -21,7 +21,7 @@ fn main() -> ! {
 
         let channels = (
             gpioa.pa8.into_alternate_af1(),
-            gpioa.pa9.into_alternate_af1()
+            gpioa.pa9.into_alternate_af1(),
         );
         // configure tim1 as a PWM output of known frequency.
         let pwm = pwm::tim1(dp.TIM1, channels, clocks, 501u32.hz());
@@ -40,8 +40,6 @@ fn main() -> ! {
         let pwm_reader = pwm_input::PwmInput::tim8(tim8, pwm_reader_ch1);
 
         let _duty = pwm_reader.get_duty_cycle();
-
-
     }
 
     loop {

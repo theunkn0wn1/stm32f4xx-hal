@@ -207,7 +207,5 @@ pub mod time;
 pub mod timer;
 #[cfg(feature = "device-selected")]
 pub mod watchdog;
-
-// TODO: enable for any compatible f4 device
-#[cfg(feature = "stm32f446")]
+#[cfg(feature = "device-selected")]
 pub mod pwm_input;

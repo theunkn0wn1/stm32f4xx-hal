@@ -148,12 +148,12 @@ macro_rules! hal {
                 }
 
                 /// Period of PWM signal in terms of clock cycles
-                pub fn get_period_clocks(&self) -> u16 {
+                pub fn get_period_clocks(&self) -> $bits {
                     // TODO: express in terms of hz
                     self.tim.ccr1.read().ccr().bits()
                 }
                 // Duty cycle in terms of clock cycles
-                pub fn get_duty_cycle_clocks(&self) -> u16 {
+                pub fn get_duty_cycle_clocks(&self) -> $bits {
                     // TODO: express in terms of % duty
                     self.tim.ccr2.read().ccr().bits()
                 }
@@ -186,4 +186,29 @@ feature = "stm32f479"
 ))]
 hal! {
     TIM8: (tim8, 1, 1, apb2enr, apb2rstr, u16),
+}
+
+
+#[cfg(any(
+feature = "stm32f401",
+feature = "stm32f405",
+feature = "stm32f407",
+feature = "stm32f410",
+feature = "stm32f411",
+feature = "stm32f412",
+feature = "stm32f413",
+feature = "stm32f415",
+feature = "stm32f417",
+feature = "stm32f423",
+feature = "stm32f427",
+feature = "stm32f429",
+feature = "stm32f437",
+feature = "stm32f439",
+feature = "stm32f446",
+feature = "stm32f469",
+feature = "stm32f479"
+))]
+hal! {
+    TIM1: (tim1, 0, 0, apb2enr, apb2rstr, u16),
+    TIM5: (tim5, 3, 3, apb1enr, apb1rstr, u32),
 }

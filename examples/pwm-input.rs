@@ -24,7 +24,7 @@ fn main() -> ! {
             gpioa.pa9.into_alternate_af1()
         );
         // configure tim1 as a PWM output of known frequency.
-        let pwm = pwm::tim1(dp.TIM1, channels, clocks, 5001u32.khz());
+        let pwm = pwm::tim1(dp.TIM1, channels, clocks, 501u32.hz());
         let (mut ch1, _ch2) = pwm;
         let max_duty = ch1.get_max_duty();
         ch1.set_duty(max_duty / 2);

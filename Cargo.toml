@@ -146,3 +146,7 @@ required-features = ["rt", "stm32f411"]
 [[example]]
 name = "can-send"
 required-features = ["can", "stm32f405"]
+
+[[example]]
+name= "pwm-input"
+required-features = ["stm32f446"]

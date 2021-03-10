@@ -39,7 +39,7 @@ fn main() -> ! {
 
         let pwm_reader = pwm_input::PwmInput::tim8(tim8, pwm_reader_ch1);
 
-        let duty = pwm_reader.get_duty_cycle();
+        let _duty = pwm_reader.get_duty_cycle();
 
 
     }

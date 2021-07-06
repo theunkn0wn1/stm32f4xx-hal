@@ -8,6 +8,7 @@ macro_rules! hal {
             use crate::stm32::$TIM;
 
             impl<PINS> PwmInput<$TIM, PINS> {
+                #[allow(unused_unsafe)] // some TIMs mark the bits operation safe, other's do not.
                 /// Configures a TIM peripheral as a quadrature encoder interface input
                 pub fn $tim(tim: $TIM, pins: PINS) -> Self
                 where
@@ -15,8 +16,8 @@ macro_rules! hal {
                 {
                     // Select the active input for TIMx_CCR1: write the CC1S bits to 01 in the TIMx_CCMR1
                     // register (TI1 selected).
-                    tim.ccmr1_input().modify(|_, w| {
-                        w.cc1s().ti1()
+                    tim.ccmr1_input().modify(|_, w| unsafe {
+                        w.cc1s().bits(0b01)
                     });
 
                     // Select the active polarity for TI1FP1 (used both for capture in TIMx_CCR1 and counter
@@ -26,16 +27,16 @@ macro_rules! hal {
                         w.cc1p().clear_bit().cc2p().clear_bit()
                     });
 
-                    // set filters and disable the prescalers.
+                    // disable filters and disable the prescalers.
                     tim.ccmr1_input().modify(|_, w| unsafe {
-                        w.ic1f().no_filter().ic2f().bits(0)
+                        w.ic1f().bits(0).ic2f().bits(0)
                             .ic1psc().bits(0).ic2psc().bits(0)
                     });
 
                     // Select the active input for TIMx_CCR2: write the CC2S bits to 10 in the TIMx_CCMR1
                     // register (TI1 selected)
-                    tim.ccmr1_input().modify(|_, w| {
-                        w.cc2s().ti1()
+                    tim.ccmr1_input().modify(|_, w| unsafe {
+                        w.cc2s().bits(0b01)
                     });
 
                     // Select the active polarity for TI1FP2 (used for capture in TIMx_CCR2): write the CC2P
@@ -46,14 +47,14 @@ macro_rules! hal {
 
                     // Select the valid trigger input: write the TS bits to 101 in the TIMx_SMCR register
                     // (TI1FP1 selected).
-                    tim.smcr.modify(|_, w| {
-                        w.ts().ti1fp1()
+                    tim.smcr.modify(|_, w| unsafe {
+                        w.ts().bits(0b101)
                     });
 
                     // Configure the slave mode controller in reset mode: write the SMS bits to 100 in the
                     // TIMx_SMCR register.
-                    tim.smcr.modify(|_, w| {
-                        w.sms().reset_mode()
+                    tim.smcr.modify(|_, w| unsafe {
+                        w.sms().bits(0b100)
                     }
                     );
 
@@ -116,11 +117,9 @@ macro_rules! hal {
 ))]
 hal! {
     TIM9: (tim9, 16, 16, apb2enr, apb2rstr, u16),
-    TIM11: (TIM11, 11,11, apb2enr, apb2rstr, u16),
 }
 
 
-use crate::{bb, hal, rcc::Clocks, stm32::RCC, time::Hertz};
 
 #[cfg(any(
     feature = "stm32f401",
@@ -140,8 +139,11 @@ use crate::{bb, hal, rcc::Clocks, stm32::RCC, time::Hertz};
     feature = "stm32f469",
     feature = "stm32f479"
 ))]
-use crate::stm32::{TIM10, TIM2, TIM3, TIM4};
-
+hal! {
+    TIM4: (tim4, 2, 2, apb1enr, apb1rstr, u16),
+    TIM3: (tim3, 1, 1, apb1enr, apb1rstr, u16),
+    TIM2: (tim2, 0, 0, apb1enr, apb1rstr, u32),
+}
 #[cfg(any(
     feature = "stm32f405",
     feature = "stm32f407",
@@ -158,7 +160,7 @@ use crate::stm32::{TIM10, TIM2, TIM3, TIM4};
     feature = "stm32f469",
     feature = "stm32f479"
 ))]
-use crate::stm32::{TIM12, TIM13, TIM14, TIM8};
+use crate::stm32::{TIM12, TIM13, TIM14};
 
 pub struct PwmInput<TIM, PINS> {
     tim: TIM,
@@ -214,5 +216,4 @@ hal! {
     TIM1: (tim1, 0, 0, apb2enr, apb2rstr, u16),
     TIM5: (tim5, 3, 3, apb1enr, apb1rstr, u32),
 }
-
 

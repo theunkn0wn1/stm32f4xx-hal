@@ -96,71 +96,29 @@ macro_rules! hal {
             } )+
 }}
 
-#[cfg(any(
-    feature = "stm32f401",
-    feature = "stm32f405",
-    feature = "stm32f407",
-    feature = "stm32f410",
-    feature = "stm32f411",
-    feature = "stm32f412",
-    feature = "stm32f413",
-    feature = "stm32f415",
-    feature = "stm32f417",
-    feature = "stm32f423",
-    feature = "stm32f427",
-    feature = "stm32f429",
-    feature = "stm32f437",
-    feature = "stm32f439",
-    feature = "stm32f446",
-    feature = "stm32f469",
-    feature = "stm32f479"
-))]
-hal! {
-    TIM9: (tim9, 16, 16, apb2enr, apb2rstr, u16),
-}
-
-
-
-#[cfg(any(
-    feature = "stm32f401",
-    feature = "stm32f405",
-    feature = "stm32f407",
-    feature = "stm32f411",
-    feature = "stm32f412",
-    feature = "stm32f413",
-    feature = "stm32f415",
-    feature = "stm32f417",
-    feature = "stm32f423",
-    feature = "stm32f427",
-    feature = "stm32f429",
-    feature = "stm32f437",
-    feature = "stm32f439",
-    feature = "stm32f446",
-    feature = "stm32f469",
-    feature = "stm32f479"
-))]
-hal! {
-    TIM4: (tim4, 2, 2, apb1enr, apb1rstr, u16),
-    TIM3: (tim3, 1, 1, apb1enr, apb1rstr, u16),
-    TIM2: (tim2, 0, 0, apb1enr, apb1rstr, u32),
-}
-#[cfg(any(
-    feature = "stm32f405",
-    feature = "stm32f407",
-    feature = "stm32f412",
-    feature = "stm32f413",
-    feature = "stm32f415",
-    feature = "stm32f417",
-    feature = "stm32f423",
-    feature = "stm32f427",
-    feature = "stm32f429",
-    feature = "stm32f437",
-    feature = "stm32f439",
-    feature = "stm32f446",
-    feature = "stm32f469",
-    feature = "stm32f479"
-))]
-use crate::stm32::{TIM12, TIM13, TIM14};
+// #[cfg(any(
+// feature = "stm32f401",
+// feature = "stm32f405",
+// feature = "stm32f407",
+// feature = "stm32f411",
+// feature = "stm32f412",
+// feature = "stm32f413",
+// feature = "stm32f415",
+// feature = "stm32f417",
+// feature = "stm32f423",
+// feature = "stm32f427",
+// feature = "stm32f429",
+// feature = "stm32f437",
+// feature = "stm32f439",
+// feature = "stm32f446",
+// feature = "stm32f469",
+// feature = "stm32f479"
+// ))]
+// hal! {
+//     TIM4: (tim4, 2, 2, apb1enr, apb1rstr, u16),
+//     TIM3: (tim3, 1, 1, apb1enr, apb1rstr, u16),
+//     TIM2: (tim2, 0, 0, apb1enr, apb1rstr, u32),
+// }
 
 pub struct PwmInput<TIM, PINS> {
     tim: TIM,
@@ -174,31 +132,9 @@ impl<TIM, PC1> Pins<TIM> for PC1 where PC1: PinC1<TIM> {}
 
 
 #[cfg(any(
-    feature = "stm32f405",
-    feature = "stm32f407",
-    feature = "stm32f412",
-    feature = "stm32f413",
-    feature = "stm32f415",
-    feature = "stm32f417",
-    feature = "stm32f423",
-    feature = "stm32f427",
-    feature = "stm32f429",
-    feature = "stm32f437",
-    feature = "stm32f439",
-    feature = "stm32f446",
-    feature = "stm32f469",
-    feature = "stm32f479"
-))]
-hal! {
-    TIM8: (tim8, 1, 1, apb2enr, apb2rstr, u16),
-}
-
-#[cfg(any(
     feature = "stm32f401",
     feature = "stm32f405",
     feature = "stm32f407",
-    feature = "stm32f410",
-    feature = "stm32f411",
     feature = "stm32f412",
     feature = "stm32f413",
     feature = "stm32f415",
@@ -210,10 +146,39 @@ hal! {
     feature = "stm32f439",
     feature = "stm32f446",
     feature = "stm32f469",
-    feature = "stm32f479"
+    feature = "stm32f479",
 ))]
+hal! {
+    TIM8: (tim8, 1, 1, apb2enr, apb2rstr, u16),
+    TIM2: (tim2, 0, 0, apb1enr, apb1rstr, u32),
+    TIM3: (tim3, 1, 1, apb1enr, apb1rstr, u16),
+    TIM4: (tim4, 2, 2, apb1enr, apb1rstr, u16),
+}
+#[cfg(any(
+feature = "stm32f405",
+feature = "stm32f407",
+feature = "stm32f412",
+feature = "stm32f413",
+feature = "stm32f415",
+feature = "stm32f417",
+feature = "stm32f423",
+feature = "stm32f427",
+feature = "stm32f429",
+feature = "stm32f437",
+feature = "stm32f439",
+feature = "stm32f446",
+feature = "stm32f469",
+feature = "stm32f479",
+))]
+hal!{
+        TIM12: (tim12, 6, 6, apb1enr, apb1rstr, u16),
+
+}
+
+
 hal! {
     TIM1: (tim1, 0, 0, apb2enr, apb2rstr, u16),
     TIM5: (tim5, 3, 3, apb1enr, apb1rstr, u32),
+    TIM9: (tim9, 16, 16, apb2enr, apb2rstr, u16),
 }
 

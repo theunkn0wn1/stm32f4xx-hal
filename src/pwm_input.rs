@@ -96,8 +96,6 @@ macro_rules! hal {
             } )+
 }}
 
-
-
 pub struct PwmInput<TIM, PINS> {
     tim: TIM,
     pins: PINS,
@@ -108,10 +106,7 @@ pub trait Pins<TIM> {}
 // implement the `Pins` trait wherever PC1 implements PinC1 and PC2 implements PinC2 for the given TIMer
 impl<TIM, PC1> Pins<TIM> for PC1 where PC1: PinC1<TIM> {}
 
-
-#[cfg(any(
-feature = "stm32f411",
-))]
+#[cfg(any(feature = "stm32f411",))]
 /* red group */
 hal! {
     TIM4: (tim4, 2, 2, apb1enr, apb1rstr, u16),
@@ -145,32 +140,31 @@ hal! {
 }
 /* green group */
 #[cfg(any(
-feature = "stm32f405",
-feature = "stm32f407",
-feature = "stm32f412",
-feature = "stm32f413",
-feature = "stm32f415",
-feature = "stm32f417",
-feature = "stm32f423",
-feature = "stm32f427",
-feature = "stm32f429",
-feature = "stm32f437",
-feature = "stm32f439",
-feature = "stm32f446",
-feature = "stm32f469",
-feature = "stm32f479",
+    feature = "stm32f405",
+    feature = "stm32f407",
+    feature = "stm32f412",
+    feature = "stm32f413",
+    feature = "stm32f415",
+    feature = "stm32f417",
+    feature = "stm32f423",
+    feature = "stm32f427",
+    feature = "stm32f429",
+    feature = "stm32f437",
+    feature = "stm32f439",
+    feature = "stm32f446",
+    feature = "stm32f469",
+    feature = "stm32f479",
 ))]
-hal!{
+hal! {
         TIM12: (tim12, 6, 6, apb1enr, apb1rstr, u16),
 }
 
-
 /* every chip across the series have these timers with support for this feature.
- .. except for the 410 which, while the timers support this feature, has a different configuration
-    than the rest of the series.
- */
+.. except for the 410 which, while the timers support this feature, has a different configuration
+   than the rest of the series.
+*/
 /* yellow group */
-#[cfg(not(feature="stm32f410"))]
+#[cfg(not(feature = "stm32f410"))]
 hal! {
     TIM1: (tim1, 0, 0, apb2enr, apb2rstr, u16),
     TIM5: (tim5, 3, 3, apb1enr, apb1rstr, u32),

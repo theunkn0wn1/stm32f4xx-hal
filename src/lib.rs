@@ -173,3 +173,5 @@ pub mod time;
 pub mod timer;
 #[cfg(feature = "device-selected")]
 pub mod watchdog;
+#[cfg(feature = "device-selected")]
+pub mod pwm_input;

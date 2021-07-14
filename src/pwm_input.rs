@@ -15,17 +15,23 @@ pub struct PwmInput<TIM, PINS: Pins<TIM>> {
     pins: PINS,
 }
 
-use crate::pac::TIM8;
+macro_rules! hal {
+    ($($TIM:ident: ($bits:ident),)+) => {
+        $(
+            // Drag the associated TIM object into scope.
+            // Note: its drawn in via the macro to avoid duplicating the feature gate
+            // this macro is expecting to be guarded by.
+            use crate::stm32::$TIM;
 
-impl Timer<TIM8> {
+impl Timer<$TIM> {
     /// Configures this timer for PWM input. accepts the `best_guess` frequency of the signal
     /// Note: this should be as close as possible to the frequency of the PWM waveform for best
     /// accuracy.
     #[allow(unused_unsafe)] //for some chips the operations are considered safe.
-    pub fn pwm_input<T, PINS>(self, best_guess: T, pins: PINS) -> PwmInput<TIM8, PINS>
+    pub fn pwm_input<T, PINS>(self, best_guess: T, pins: PINS) -> PwmInput<$TIM, PINS>
     where
         T: Into<Hertz>,
-        PINS: Pins<TIM8>,
+        PINS: Pins<$TIM>,
     {
         /*
         Borrowed from PWM implementation.
@@ -108,11 +114,11 @@ impl Timer<TIM8> {
     }
 }
 
-impl<PINS> PwmInput<TIM8, PINS>
+impl<PINS> PwmInput<$TIM, PINS>
 where
-    PINS: Pins<TIM8>,
+    PINS: Pins<$TIM>,
 {
-    pub fn reclaim(self) -> (Timer<TIM8>, PINS) {
+    pub fn reclaim(self) -> (Timer<$TIM>, PINS) {
         // disable timer
         self.tim.cr1.modify(|_, w| w.cen().disabled());
         // decompose elements
@@ -136,4 +142,7 @@ where
         };
         return (self.get_duty_cycle_clocks() as f32 / period_clocks as f32) * 100f32;
     }
-}
+            } )+
+}}
+
+hal!(TIM8: (u16),);

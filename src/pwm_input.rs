@@ -9,6 +9,31 @@ pub trait Pins<TIM> {}
 // implement the `Pins` trait wherever PC1 implements PinC1
 impl<TIM, PC1> Pins<TIM> for PC1 where PC1: PinC1<TIM> {}
 
+/// Represents a TIMer configured as a PWM input.
+/// This peripheral will emit an interrupt on CC2 events, which occurs at two times in this mode:
+/// 1. When a new cycle is started: the duty cycle will be `1.00`
+/// 2. When the period is captured. the duty cycle will be an observable value.
+/// An example interrupt handler is provided:
+/// ```
+/// use stm32f4xx_hal::stm32::TIM8;
+/// use stm32f4xx_hal::timer::Timer;
+/// use stm32f4xx_hal::pwm_input::PwmInput;
+/// use stm32f4xx_hal::gpio::gpioc::PC6;
+/// use stm32f4xx_hal::gpio::Alternate;
+///
+/// type Monitor = PwmInput<stm32f4xx_hal::stm32::TIM8, PC6<Alternate<3>>>;
+///
+/// fn tim8_cc2(monitor: &Monitor) {
+///             let duty_clocks = monitor.get_duty_cycle_clocks();
+///             let period_clocks = monitor.get_period_clocks();
+///             // check if this interrupt was caused by a capture at the wrong CC2,
+///             // peripheral limitation.
+///             if !monitor.is_valid_capture(){
+///                 return;
+///             }
+///             let duty = monitor.get_duty_cycle();
+/// }
+/// ```
 pub struct PwmInput<TIM, PINS: Pins<TIM>> {
     tim: TIM,
     clk: Hertz,
@@ -18,15 +43,20 @@ pub struct PwmInput<TIM, PINS: Pins<TIM>> {
 macro_rules! hal {
     ($($TIM:ident: ($bits:ident),)+) => {
         $(
-            // Drag the associated TIM object into scope.
-            // Note: its drawn in via the macro to avoid duplicating the feature gate
-            // this macro is expecting to be guarded by.
-            use crate::stm32::$TIM;
+        // Drag the associated TIM object into scope.
+        // Note: its drawn in via the macro to avoid duplicating the feature gate this macro is
+        //       expecting to be guarded by.
+        use crate::stm32::$TIM;
 
         impl Timer<$TIM> {
-            /// Configures this timer for PWM input. accepts the `best_guess` frequency of the signal
+            /// Configures this timer for PWM input. Accepts the `best_guess` frequency of the signal
             /// Note: this should be as close as possible to the frequency of the PWM waveform for best
             /// accuracy.
+            ///
+            /// This device will emit an interrupt on CC1, which occurs at two times in this mode:
+            /// 1. When a new cycle is started: the duty cycle will be `1.00`
+            /// 2. When the period is captured. the duty cycle will be an observable value.
+            /// See the pwm input example for an suitable interrupt handler.
             #[allow(unused_unsafe)] //for some chips the operations are considered safe.
             pub fn pwm_input<T, PINS>(self, best_guess: T, pins: PINS) -> PwmInput<$TIM, PINS>
             where
@@ -130,11 +160,11 @@ macro_rules! hal {
             pub fn get_period_clocks(&self) -> $bits {
                 self.tim.ccr1.read().ccr().bits()
             }
-            // Duty cycle in terms of clock cycles
+            /// Duty cycle in terms of clock cycles
             pub fn get_duty_cycle_clocks(&self) -> $bits {
                 self.tim.ccr2.read().ccr().bits()
             }
-
+            /// Observed duty cycle as a float in range [0.00, 1.00]
             pub fn get_duty_cycle(&self) -> f32 {
                 let period_clocks = self.get_period_clocks();
                 if period_clocks == 0 {
@@ -142,7 +172,13 @@ macro_rules! hal {
                 };
                 return (self.get_duty_cycle_clocks() as f32 / period_clocks as f32) * 100f32;
             }
-                    }
+            /// Returns whether the timer's duty cycle is a valid observation
+            /// (Limitation of how the captures work is extra CC2 interrupts are generated when the
+            /// PWM cycle enters a new period).
+            pub fn is_valid_capture(&self) -> bool {
+                self.get_duty_cycle_clocks() != self.get_period_clocks()
+            }
+        }
         )+
 }}
 
@@ -156,21 +192,21 @@ hal! {
 
 /* orange group */
 #[cfg(any(
-feature = "stm32f401",
-feature = "stm32f405",
-feature = "stm32f407",
-feature = "stm32f412",
-feature = "stm32f413",
-feature = "stm32f415",
-feature = "stm32f417",
-feature = "stm32f423",
-feature = "stm32f427",
-feature = "stm32f429",
-feature = "stm32f437",
-feature = "stm32f439",
-feature = "stm32f446",
-feature = "stm32f469",
-feature = "stm32f479",
+    feature = "stm32f401",
+    feature = "stm32f405",
+    feature = "stm32f407",
+    feature = "stm32f412",
+    feature = "stm32f413",
+    feature = "stm32f415",
+    feature = "stm32f417",
+    feature = "stm32f423",
+    feature = "stm32f427",
+    feature = "stm32f429",
+    feature = "stm32f437",
+    feature = "stm32f439",
+    feature = "stm32f446",
+    feature = "stm32f469",
+    feature = "stm32f479",
 ))]
 hal! {
     TIM8: (u16),
@@ -180,20 +216,20 @@ hal! {
 }
 /* green group */
 #[cfg(any(
-feature = "stm32f405",
-feature = "stm32f407",
-feature = "stm32f412",
-feature = "stm32f413",
-feature = "stm32f415",
-feature = "stm32f417",
-feature = "stm32f423",
-feature = "stm32f427",
-feature = "stm32f429",
-feature = "stm32f437",
-feature = "stm32f439",
-feature = "stm32f446",
-feature = "stm32f469",
-feature = "stm32f479",
+    feature = "stm32f405",
+    feature = "stm32f407",
+    feature = "stm32f412",
+    feature = "stm32f413",
+    feature = "stm32f415",
+    feature = "stm32f417",
+    feature = "stm32f423",
+    feature = "stm32f427",
+    feature = "stm32f429",
+    feature = "stm32f437",
+    feature = "stm32f439",
+    feature = "stm32f446",
+    feature = "stm32f469",
+    feature = "stm32f479",
 ))]
 hal! {
         TIM12: (u16),
